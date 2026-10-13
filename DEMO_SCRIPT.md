@@ -1,229 +1,283 @@
-# Demo script: 15 minutes, five presenters, one story
+# Demo script: 15 minutes, one story
 
 **Team:** Rapid Builders
-**Audience:** Primark CXO, CIO and a senior AI architect.
-**Goal:** they leave believing three things. (1) There is real money with customers who are quietly leaving. (2) We can see who they are and what to do. (3) The numbers can be trusted.
-**Say early and plainly:** all data is synthetic, modelled on UK and Ireland shoppers.
+**Audience:** Primark CXO, CIO and a senior AI architect. Sceptical and cautious.
+**The one idea they must leave with:** *Not every customer deserves the same pound.*
+**The shape:** one person → two people → everyone → can you trust it → why no LLM → the ask.
 
 Read numbers off the screen, not this page. Bracketed figures are from the reference run.
 
 ---
 
-## Who built what
+## Who does what
 
-Each presenter shows the part they own, and says so in their first sentence. Before the demo, each person must be able to answer questions on their part (see the Q&A table at the end).
+| Person | Role on the day |
+|---|---|
+| **Viditi** | Main presenter. Drives the laptop from C10000 to the "no LLM" moment. |
+| **Soham** | Opens (before and after the film) and closes. Routes business questions in Q&A. Uses `NUMBERS_SCRIPT.md` if asked how the numbers are made. |
+| **Dibyendu** | ML lead. The proof (Model page) and one line in the "no LLM" moment. Takes every technical question. |
+| **Nilanjana** | Leaflets at the close. Owns data questions in Q&A. |
+| **Rima** | Leaflets at the close. Owns segment questions in Q&A. |
 
-| Presenter | Owns in the framework | Files to know | Presents |
-|---|---|---|---|
-| **Soham** (product lead) | Product idea, architecture, API and dashboard, campaign economics and sliders | `api/`, `web/`, `run_all.py`, campaign settings in `src/segments.py` | Hook, Overview, Close |
-| **Nilanjana** | The synthetic customer world and the customer measures (features) | `src/generate_data.py`, `src/features.py` | The data and the idea |
-| **Rima** | The four customer groups and the action for each | Segment rules and actions in `src/segments.py` | Segments |
-| **Viditi** | Churn signals, the "why flagged" reasons, and the AI roadmap (LLM briefing and campaign assistant) | `src/segments.py` reasons, Customer page | Customer C10000 |
-| **Dibyendu** (ML lead) | Model design and choice, the testing approach and scorecard ladder, the loyalty analysis; technical reviewer for the whole pipeline | `src/models.py`, `src/loyalty.py` | Loyalty and Trust |
-
-Adjust the ownership column so it matches who really did what. Whatever it says, that person must be able to defend it.
+Every handover is a fixed line, in **bold**. Nobody steps in anywhere else.
 
 ---
 
 ## Run of show
 
-| Min | Presenter | On screen | Story beat |
+| Time | Who | On screen | Beat |
 |---|---|---|---|
-| 0:00 to 1:00 | Soham | Slide 1 (cover) | Two stores, one blind spot |
-| 1:00 to 2:30 | Nilanjana | Slides 3 to 5 | What we built it on, and the idea in one sentence |
-| 2:30 to 4:30 | Soham | Live: Overview | How big the blind spot is, in pounds |
-| 4:30 to 6:00 | Rima | Live: Segments | Four groups, four plays |
-| 6:00 to 9:00 | Viditi | Live: Customer C10000 | One customer makes it real |
-| 9:00 to 10:30 | Dibyendu | Live: Loyalty | What signing up more members could be worth |
-| 10:30 to 12:30 | Dibyendu | Live: Model | Can you trust it? |
-| 12:30 to 14:00 | Soham | Slides 9 to 11 | Back to the two stores, and the ask |
-| 14:00 to 15:00 | Soham routes questions | | Q&A |
+| 0:00 to 0:20 | Soham | Black, film paused | "Meet one of your customers. Watch." |
+| 0:20 to 1:05 | Nobody | Film | Her story |
+| 1:05 to 1:25 | Soham | App, already on C10000 | Bridge: "something you can audit" |
+| 1:25 to 3:00 | Viditi | C10000 | The film, now as a real screen |
+| 3:00 to 4:00 | Viditi | C10001 | Same warning sign, low value |
+| 4:00 to 4:40 | Viditi | Comparison panel | Not every customer deserves the same pound |
+| 4:40 to 6:40 | Viditi | Overview | Zoom out: now do it for everyone |
+| 6:40 to 7:30 | Viditi | Segments | The two customers, at scale |
+| 7:30 to 8:15 | Viditi | Loyalty | One lever |
+| 8:15 to 10:15 | Dibyendu | Model | The proof |
+| 10:15 to 11:15 | Viditi + Dibyendu | Slide 10: Why no LLM | Raised before they ask |
+| 11:15 to 12:45 | Soham | Slides 11 and 12 | Back to her; two stores; the ask |
+| 12:45 to 15:00 | All | | Q&A |
 
-**The story arc:** a question (Soham) → what we built it on (Nilanjana) → how big it is (Soham) → who to act on (Rima) → one real person (Viditi) → a lever to grow it (Dibyendu) → proof (Dibyendu) → the answer to the opening question (Soham).
-
-**Handovers:** every presenter ends with a bridge line that names the next person. Bridges are in bold below. Do not skip them; they are what makes it one story rather than five talks.
-
-**If running long:** cut Loyalty to 45 seconds (one slider, one sentence). Never cut Customer or Model.
+**If running long:** cut Loyalty to one sentence. Never cut the two customers, the Model page or the "no LLM" moment.
 
 ---
 
-## Before you start (5 minutes before)
+## Before you start (10 minutes before)
 
-1. Terminal: `uvicorn api.main:app --reload`. Open http://127.0.0.1:8000 in a clean browser window.
+1. Terminal: `uvicorn api.main:app --reload`. Open http://127.0.0.1:8000.
 2. Light theme. Browser zoom 110% or 125%.
-3. Click **Overview** once and **C10000** once so they are cached. Leave the Overview sliders at **Protect 20%, Win back 12%** so the screen matches the leaflet.
-4. Deck open in a second window. Notifications off. Deck PDF on the desktop as backup.
-5. Stand in speaking order. One clicker or laptop position; each presenter drives their own section.
-6. Leaflets: hand out after the close, not before. Full plan in `LEAFLET_SCRIPT.md`.
+3. Open **Overview**, **C10001** and **C10000** once each so they are cached. **Leave the browser on C10000**, scrolled to the top: it is the first screen after the film. Leave the Overview sliders at Protect 20%, Win back 12%.
+4. Film: `C10000_story.mp4` full screen on top of the browser, paused on the first frame. Test the sound on the room speakers. Keep `C10000_story_silent.mp4` ready.
+5. Deck open in a second window on slide 1. Notifications off. Deck PDF on the desktop.
+6. Leaflets face down with Nilanjana and Rima.
 
 ---
 
-## 0:00 to 1:00, Soham: the hook (slide 1)
+# Act 1: One person
 
-Stand away from the laptop. No clicks. Short sentences, pause where marked.
+## 0:00 to 0:20, Soham: before the film
 
-"Primark is opening stores in the United States. On day one, every new store is full. *(pause)*
+Lights down if you can. Stand away from the laptop. Slow.
 
-Back in the UK and Ireland, the stores you have run for years are full too. *(pause)*
+> "Before we show you a single number, we'd like you to meet one of your customers.
+> She's loyal. For three years she's shopped with you every few weeks.
+> Over the next few months, she'll quietly stop coming in. No complaint, no goodbye, and nothing in your sales reports will flag it.
+> *(pause)* Watch."
 
-Both look like success on a sales report. But neither report can answer the question that decides the next five years: of everyone walking in today, who will still be coming back in twelve months, and who has quietly stopped? *(pause)*
+Press play. Step back.
 
-In a new store, you cannot tell a one-off curious visitor from a future regular. In an established store, you cannot tell a busy regular from one who is drifting away. Same blind spot, two sides of the Atlantic.
+## 0:20 to 1:05, the film
 
-We are Rapid Builders, and we built something that closes it. Five of us, each showing the part we built, with Dibyendu leading the machine learning."
+Nobody speaks. Let the end card hold until it fades. If the audio fails, let it run; the captions carry it.
 
-**Bridge:** "Nilanjana built the world we tested it in."
+## 1:05 to 1:25, Soham: the bridge
 
-Rules: ask the question, never claim the US stores have a problem. Do not promise a store-by-store view.
+Close the film. The app is already showing C10000.
 
-## 1:00 to 2:30, Nilanjana: the data and the idea (slides 3 to 5)
+> "C10000 isn't real; all our data is synthetic, and it says so on every screen. But every one of you has thousands of her.
+> And this year, while everyone pitches you a chatbot, we built something you can audit, number by number.
+> **Viditi, show them where she lives.**"
 
-"I built the data. We could not use real Primark customers, so I built 20,000 synthetic ones that behave like UK and Ireland shoppers: how often they visit, what they buy, what they return, whether they use the app. There is a badge on every screen saying it is synthetic.
+---
 
-From their visit history, I worked out a set of simple measures for every customer: how recently they came, how often, how much they spend, their favourite category. Everything after this is built on those measures.
+# Act 2: Two people, then everyone (Viditi)
 
-Today a sales report tells you what customers spent. It does not tell you who is about to stop. A customer who visited every three weeks and has not been seen for three months looks the same as one who is simply busy.
+## 1:25 to 3:00, C10000: the film, as a real screen
 
-The idea in one sentence: for every customer, estimate the chance they are still with us, and what they will spend if they are, then multiply."
+> "What you just watched is this screen. Same customer, same numbers.
+> C10000: 38, Manchester, a loyal family shopper. About fifty visits, about £1,900 over three years."
 
-**Bridge:** "Soham will show you what that adds up to."
+Point to the summary.
+> "The model gives her only a [27%] chance of still being an active customer. If she stays, she's worth about [£345] next year. Today we expect only [£92]. So [£253] is at risk."
 
-Keep it to 90 seconds. Do not name the models; Dibyendu covers them.
+Point to **Why this customer was flagged**.
+> "And it tells us why, in a sentence anyone can act on: last visit 102 days ago, five times her usual gap of 20 days."
 
-## 2:30 to 4:30, Soham: the headline (live: Overview)
+Point to **Days between visits**.
+> "Twenty days, then 26, 31, 38, 60. Orange means much longer than her usual. Exactly what you saw in the film."
 
-**Click:** Overview. Let the big number settle.
+Point to **Recommended next step**.
+> "So we invest: early access plus an offer in Womenswear, her favourite category, by app and email."
 
-"This is the blind spot, in pounds. Over the next 12 months, about [£540k] of revenue sits with customers who may already be drifting away. Targeted campaigns could win back about [£83.9k]. That carries an 'assumption' label, and here is why."
+## 3:00 to 4:00, C10001: same warning sign
 
-**Click:** drag **Protect** from 20% to 30%, then back. Then nudge **Win back**.
+**Click:** the **C10001, low value** chip.
 
-"These two sliders are the assumptions: what share of at-risk customers a campaign keeps. Protect is set at 20%, Win back at 12%. Nobody has measured these for Primark yet, so we let you move them. Campaign cost is about [£20k], and the net return about [£64k]: roughly three pounds back for every pound spent. Even at half these rates it still pays. A pilot replaces both numbers with measured ones."
+> "Now C10001. 24, Leeds. Small baskets, about six pounds a visit, every six weeks or so last year. Then nothing since Black Friday.
+> Same warning sign. In fact the model is even more sure she's gone: [92%]. Last visit 306 days ago, seven times her usual gap, and she's stopped opening our emails.
+> But if she stayed, she'd be worth about [£33] a year."
+
+## 4:00 to 4:40, the comparison
+
+Scroll to **Same warning sign, different decision**.
+
+> "Side by side. Same model, same signal, two completely different decisions.
+> For C10000 we spend about [£8] of personal attention to get back about [£50].
+> For C10001 we spend about [£1]: one automated email, no personal offer, for about [£4] back.
+> *(pause)* Not every customer deserves the same pound. This tells you where to spend, and just as importantly, where not to."
+
+## 4:40 to 6:40, Overview: now do it for everyone
+
+> "That's two customers. Now imagine doing this every morning, for every customer you can identify."
+
+**Click:** Overview. Let the number settle.
+
+> "Across our customers, about [£540k] of next year's revenue sits with people like C10000 and C10001, people who may already be drifting away.
+> How much can we realistically win back? About [£83.9k]. Notice the label: *assumption*."
+
+**Click:** drag **Protect** from 20% to 30%, then back.
+
+> "These two sliders are the only guesses on this page: what share of drifting customers a campaign keeps. We set them low on purpose, 20% and 12%. Campaign cost is about [£20k] and the net return about [£64k]: roughly three pounds back for every pound spent. Even if we're wrong by half, it still pays. A pilot replaces both numbers with measured ones."
 
 **Click:** the **Customers** switch on the bar, then back to **Revenue at risk**.
 
-"By customers, half are in the blue group. By money, a much smaller orange group carries almost a third of the risk. A few high-value customers matter far more than their numbers suggest."
-
-**Bridge:** "Rima built the rules that decide who goes where, and what we do about each."
+> "By number of customers, the orange group is small. By money, it carries far more than its share. That's C10000's group."
 
 **Click:** the **Protect** tile.
 
-## 4:30 to 6:00, Rima: the four groups (live: Segments)
+## 6:40 to 7:30, Segments: the two customers, at scale
 
-Short, fully scripted. One click only.
+> "Every customer gets the same two questions: how much are they worth if we keep them, and how likely are they to have drifted?"
 
-"I built the customer groups. Every customer gets two questions: how much are they worth if we keep them, and how likely are they to have drifted? That gives four groups, and each gets a different action."
+Point to each tile, one line each:
+- **Protect:** "C10000 lives here. High value, slipping. Personal attention, quickly."
+- **Grow:** "High value and happy. Reward them; no discounts they'd have shopped without."
+- **Win back:** "C10001 lives here. Lower value, probably gone. Cheap and automated."
+- **Maintain:** "Lower value and steady. Leave them alone and save the money."
 
-Point to each tile and say one line:
-- **Protect:** "High value and slipping. Personal outreach before they lapse."
-- **Grow:** "High value and healthy. Reward them, no discounts."
-- **Win back:** "Lower value and probably gone. Cheap email, nothing expensive."
-- **Maintain:** "Lower value, still active. Leave them alone and save the money."
+## 7:30 to 8:15, Loyalty: one lever
 
-**Click:** the **Protect** priority table. Point at the first rows.
+**Click:** Loyalty.
 
-"The Protect list is ranked by how much money is at risk, so the team always calls the most valuable customers first. Each one comes with a reason and a next step."
-
-**Bridge:** "Viditi will open one of them."
-
-## 6:00 to 9:00, Viditi: one customer (live: Customer C10000)
-
-This is the centrepiece. Slow down.
-
-**Click:** type **C10000** or click the guided-demo shortcut.
-
-"I worked on how the system spots a customer drifting away and explains it in plain English. Meet C10000: 38, Manchester, a family shopper. About fifty visits and £1,900 spent, a member registered on the app."
-
-Point to the summary.
-"The model gives her only a [27%] chance of still being an active customer. If we keep her, she is worth about [£345] next year. Expected value today is only [£92], so about [£253] is at risk."
-
-Point to **Why this customer was flagged**.
-"Here is the reason, in a sentence anyone can act on: last visit 102 days ago, five times her usual gap of 20 days, and no visits in the last 90."
-
-Point to the **still active?** chart.
-"Each tick is a visit. After every visit, the chance she is still with us jumps up, then fades while she is away. After June it falls through the 50% line and keeps falling."
-
-Point to **Days between visits**.
-"This is what the system noticed: her gaps were steady at 20 days, then 26, 31, 38, 60. Orange means much longer than her usual."
-
-Point to **Recommended next step**.
-"The action: early access plus an offer on womenswear, her favourite category, by app push and email. One customer, one reason, one next step.
-
-Next, we want a language model to turn this page into a short briefing for the CRM team and draft the message. It would never calculate anything, and a person approves every message. That is on our roadmap, not built yet."
-
-**Bridge:** "Dibyendu led the machine learning behind that 27%. He also set the bar for how strictly we test ourselves."
-
-## 9:00 to 10:30, Dibyendu: members (live: Loyalty)
-
-"I led the modelling, so let me start with one lever and then show you how we test everything.
-
-Customers registered as members visit about 18% more often and are about 18% less likely to leave. Primark does not run a classic loyalty card today, so read this as: what could a members programme on the app be worth?
-
-A data scientist's caution here: keen shoppers are the ones who sign up, so this is an association, not proof of cause. Rather than hide that, we built it into the tool."
+> "One more lever. Customers registered as members visit about 18% more often and leave less. Primark doesn't run a classic loyalty card, so read this as: what would a members programme on the app be worth? It's association, not proof, so this slider lets you decide how much you believe. And who you invite matters more than how many."
 
 **Click:** drag **share of the gap the programme really causes** to 25%, then back to 50%.
-"You decide how much you believe. At 50%, signing up the best 20% of non-members first returns about [£2.50 per pound spent]."
 
-**Click:** **Random customers**, then back to **Best customers first**.
-"Signing up at random does far worse. Who you invite matters more than how many."
-
-## 10:30 to 12:30, Dibyendu: can you trust it? (live: Model)
-
-**Click:** Model.
-
-"When we designed the models, I set one rule: nothing goes on screen unless it beats a simple method on data it has never seen. So we trained on older data and tested on a full year held back."
-
-Point to the strip.
-- "Average miss per customer is about [£38]. The standard RFM method, the usual marketing rule of thumb, misses by about [£42]. So we are about 10% better than the method most retailers use today, on a fair, held-out test."
-- "The total forecast is within about 1% of what really happened."
-- "Spotting who has left scores [0.85], where 0.5 is a coin flip."
-
-Scroll to the **scorecard ladder**.
-"I built this ladder so you can see what each idea earns its place for. Each row adds one idea. For spend, gradient boosting does most of the work. The visit model adds something boosting cannot: the probability a customer has already gone, which powers the Protect and Win back lists you just saw. I chose the blend because it gets the total within about 1%, and the total is what a budget is set on."
-
-Point to **Did the visit model learn the truth?**
-"And a check you rarely get: because Nilanjana's data is synthetic, we know the hidden settings that produced it. The model was never shown them and recovers them closely."
-
-**Bridge:** "Soham, back to the two stores."
-
-## 12:30 to 14:00, Soham: the close (slides 9 to 11)
-
-"Back to where we started: a new store in the US and an old store in Manchester, with the same blind spot. This closes it.
-
-Three things. Value at risk is large and sits with a small group of high-value customers. We can see who they are, why, and what to do. And, thanks to the testing Dibyendu designed, the numbers hold up on a year the model never saw.
-
-To make it real we need three things from Primark: a sample of real identified-customer data, one campaign test with a control group to replace our assumed save rates, and a decision on which group to start with. We would start with Protect: most money per customer, clearest action."
-
-"Thank you. We are happy to take questions, and each of us will answer on the part we built."
-
-Nilanjana and Rima hand out leaflets now. See `LEAFLET_SCRIPT.md`.
+**Handover:** **"You've seen what it says. Dibyendu built the models, and he's the reason we hold ourselves to such a strict test."**
 
 ---
 
-## Q&A: who answers what
+# Act 3: Can you trust it?
 
-Business questions: Soham hears them and passes them to the owner by name. Technical and model questions go straight to Dibyendu without routing; he decides whether to answer or invite the owner. If anyone stalls, Dibyendu adds a sentence on technical points, Soham on business points.
+## 8:15 to 10:15, Dibyendu: the proof (Model page)
 
-| Question | Answered by | Honest answer |
-|---|---|---|
-| Is this real data? | Nilanjana | No, synthetic and labelled on every screen. Real data would fill the same five tables after a cleaning step. |
-| How did you make the data realistic? | Nilanjana | Each customer has their own visit rate, chance of leaving, basket size and favourite category, with seasonality and returns. |
-| Are you saying our US stores are underperforming? | Soham | No. We have no data on them. Every new store faces the same question in its first months; this answers it for any shopper you can identify. |
-| Could this work for a new US store? | Dibyendu | In principle, yes, for shoppers identified through the app or CRM. The model allows someone to visit once and never return, the typical new-store pattern. It needs a few months of history and is untested on US data. |
-| Where does the £83.9k come from? | Soham | Assumed save rates and costs, shown on Segments and adjustable on Overview. At about a quarter of today's rates it breaks even; at half it still pays. A campaign test measures the real rates. |
-| How are customers put into groups? | Rima | Two rules: top 30% by value is "high value"; a 50% or higher chance of having drifted is "high risk". |
-| Why these actions? | Rima | They are sensible starting rules, not learned from results. A campaign test with a control group tells us which actions really work. |
-| How does it explain a customer? | Viditi | Plain-English rules on recency, visit gaps and trend. They are auditable but they are not model attributions; per-customer drivers are a planned upgrade. |
-| Does this use an LLM? | Viditi | Not yet. The numbers come from statistical models, so they are repeatable. We plan an LLM only for briefings and draft messages, never for calculation, with human approval. |
-| Why not just use gradient boosting? | Dibyendu | For spend accuracy, boosting alone is nearly as good, and we show that. The visit model gives the chance a customer has left, which boosting cannot. |
-| Why a blend? | Dibyendu | Per customer, stacked is slightly closer. For budgeting the total matters, and the blend gets that within about 1%. |
-| How sure are you about one customer? | Dibyendu | The demo shows a point estimate, not a range. Uncertainty ranges are a planned addition. |
-| Are gender and age used? | Dibyendu | Yes, currently as inputs to spend. We would remove or review them, and check fairness, before real use. |
-| Does a members programme really cause higher spend? | Dibyendu | We cannot tell from this data. That is why the slider lets you choose. |
-| How does it fit our systems? | Soham | Scores run in a batch on Primark's data platform and feed the CRM and marketing tools Primark already uses. It is a scoring layer, not a new marketing platform. |
-| How is this different from Salesforce, Optimove or Adobe? | Soham | Those platforms run campaigns; we do not. What we show is a scoring layer Primark owns: value and risk in pounds per customer, accuracy openly tested against simple methods, every assumption visible. It would feed those tools, not replace them. |
-| How often would it update? | Soham | The pipeline runs in about a minute on a laptop. Weekly is realistic. |
-| What would it cost for real? | Soham | Not answered by this demo. We would come back with a scoped estimate. |
+**Click:** Model.
+
+> "When we designed the models, I set one rule: nothing goes on screen unless it beats a simple method on data it has never seen. So we trained on older data and tested on a full year we held back."
+
+Point to the strip:
+- "Average miss per customer, about [£38]. The standard RFM method most retailers use misses by about [£42]. About 10% better, on a fair test."
+- "Across all customers, the total forecast lands within about 1% of what really happened."
+- "Spotting who has left scores [0.85], where 0.5 is a coin flip."
+
+Scroll to the **scorecard ladder**.
+> "Each row adds one idea. For spend, gradient boosting does most of the work. The visit model adds what boosting can't: the probability a customer has already gone. That's what put C10000 in Protect and C10001 in Win back. I chose the blend because it gets the total right, and the total is what a budget is set on."
+
+Point to **Did the visit model learn the truth?**
+> "And a check you rarely get: because the data is synthetic, we know the hidden settings that produced it. The model was never shown them and recovers them closely."
+
+**Handover:** **"And for the question you're probably about to ask, Viditi."**
+
+## 10:15 to 11:15, Viditi: why there is no LLM (slide 10)
+
+> "You may be wondering where the generative AI is. There's no LLM in the engine, and that's deliberate.
+> One: the question is about numbers. Forecasting spend and churn from transactions is what statistics and machine learning do best.
+> Two: same input, same answer. Every number can be repeated, traced and tested on a year it never saw.
+> Three: customer data stays inside Primark. Nothing goes to an outside AI service. It even runs offline, on this laptop.
+> Four: it scores millions of customers in minutes, with no per-call bill.
+> Language AI belongs on top: a short briefing for the CRM team, a first draft of the message, with a person approving every one. Maths for the numbers, rules you can read for the decisions, language only for the words. **Dibyendu?**"
+
+**Dibyendu:** "Same input, same answer, every time. That's what makes it auditable."
+
+**Handover:** **Viditi: "Soham, back to her."**
+
+## 11:15 to 12:45, Soham: the close (slides 11 and 12)
+
+> "Back to C10000. Today, nobody would notice she's gone. With this, the CRM team sees her in the morning, with a reason and a next step. And it doesn't waste a pound on customers who won't repay it.
+>
+> Primark is opening stores in the United States. Every new store there, and every store in Manchester, faces the same question: of everyone walking in today, who will still be coming back in a year? No sales report answers it. This does.
+>
+> To make it real, we'd ask for three things: a sample of real identified-customer data, one campaign test with a control group to replace our two assumed save rates, and a decision on where to start. We'd start with Protect.
+>
+> Thank you."
+
+**Nilanjana and Rima** hand out leaflets, front side up, from both ends of the table.
+
+**Soham:** "We're happy to take questions. Each of us will answer on the part we built."
+
+Rules: never claim the US stores have a problem. Do not promise a store-by-store view.
+
+---
+
+## Likely questions and answers
+
+Answer in one or two sentences, then stop.
+
+**How are these numbers actually made?**
+Use `NUMBERS_SCRIPT.md` (the 60-second version).
+
+**Why no LLM? Isn't that behind the times?**
+It's a choice. Numbers need models you can test and audit; an LLM can't be backtested the same way, varies run to run, and would send customer data outside. Language AI belongs on top, for briefings and drafts, with human approval.
+
+**Will you add an LLM later?**
+Yes, for words only: a briefing per customer and a draft message in Primark's voice. It never calculates, and a person approves every message.
+
+**Couldn't an LLM predict churn too?**
+It could guess, but not in a way you can test against a held-out year, reproduce exactly or explain. For tabular forecasting, gradient boosting and survival-style models are the established, auditable tools.
+
+**Is this real data?**
+No, synthetic, labelled on every screen. 20,000 customers built to behave like UK and Ireland shoppers. Real data would fill the same five tables after a cleaning step.
+
+**Are C10000 and C10001 real?**
+Both are hand-written examples inside the synthetic data, chosen to show the two ends of the decision. C10001 is scored but kept out of training, so she doesn't influence anyone else's numbers.
+
+**How are customers put into groups?**
+Two rules: top 30% by value is "high value"; a 50% or higher chance of having drifted is "high risk". Primark can move both.
+
+**Why these actions?**
+Sensible starting rules, not learned from results. A campaign test with a control group tells us which actions really work.
+
+**Where does the £83.9k come from?**
+Assumed save rates and costs, shown on Segments and adjustable on Overview. Contact costs are low, so each campaign pays even at very low save rates; at half our rates it still pays. A campaign test measures the real numbers.
+
+**Did C10000 really come back, in the film?**
+No. The film shows what the system is built to make happen. Her 73% and £253 are real model outputs on synthetic data; whether a message brings her back is what a pilot measures.
+
+**Are you saying our US stores are underperforming?**
+No. We have no data on them and make no claim. Every new store faces the same question in its first months.
+
+**Could this work for a new US store?**
+For shoppers identified through the app or CRM, yes in principle. The model allows someone to visit once and never return, the typical new-store pattern. It needs a few months of history and is untested on US data.
+
+**Why not just use gradient boosting?**
+For spend accuracy, boosting alone is nearly as good, and we show that. The visit model gives the chance a customer has left, which boosting can't.
+
+**Why a blend?**
+Per customer, stacked is slightly closer. For budgeting the total matters, and the blend gets it within about 1%.
+
+**How sure are you about one customer?**
+The demo shows a point estimate, not a range. Uncertainty ranges are a planned addition.
+
+**Are gender and age used?**
+Yes, currently as inputs to spend. We'd remove or review them, and check fairness, before real use.
+
+**How does it fit our systems?**
+It's a scoring layer. Scores run in a batch on Primark's data platform and feed the CRM and marketing tools you already use.
+
+**How is this different from Salesforce, Optimove or Adobe?**
+Those platforms run campaigns; we don't. This is a scoring layer Primark owns: value and risk in pounds per customer, tested openly against simple methods, every assumption visible. It would feed those tools, not replace them.
+
+**Does a members programme really cause higher spend?**
+We can't tell from this data. That's why the slider lets you choose.
+
+**How often would it update?**
+The pipeline runs in about a minute on a laptop. Weekly is realistic.
+
+**What would it cost for real?**
+Not answered by this demo. We'd come back with a scoped estimate.
 
 ---
 
@@ -231,8 +285,9 @@ Business questions: Soham hears them and passes them to the owner by name. Techn
 
 | Problem | What to do |
 |---|---|
-| Page shows "Something went wrong" | Soham restarts `uvicorn api.main:app --reload` and refreshes. The current presenter says "ten seconds" and keeps talking |
-| Laptop fails entirely | Switch to the deck PDF and narrate the same path |
+| Film has no sound | Let it play; the captions carry it. Do not restart it |
+| Page shows "Something went wrong" | Soham restarts `uvicorn api.main:app --reload` and refreshes. Viditi says "ten seconds" and keeps talking |
+| Laptop fails entirely | Switch to the deck PDF: slide 3 carries the two customers, slide 9 the evidence, slide 10 the "no LLM" case |
 | Number on screen differs from this script | Use the screen. Say nothing about it |
-| A presenter freezes | The next presenter says their bridge line and carries on. Nobody comments on it |
+| A presenter freezes | The next person says their handover line and carries on. Nobody comments on it |
 | Projector washes out light theme | Click the theme switch for dark |

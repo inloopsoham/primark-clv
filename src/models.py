@@ -357,6 +357,10 @@ def run():
     train = pd.read_parquet(C.OUTPUT_DIR / "features_train.parquet")
     test = pd.read_parquet(C.OUTPUT_DIR / "features_test.parquet")
     score = pd.read_parquet(C.OUTPUT_DIR / "features_score.parquet")
+    # The hand-written contrast customer C10001 is scored but never learned from,
+    # so adding her cannot move anyone else's numbers.
+    low = f"C{C.DEMO_LOW_INDEX + 1:05d}"
+    train, test = train[train["customer_id"] != low], test[test["customer_id"] != low]
     print(f"GBM engine: {GBM_ENGINE}")
 
     # ---- A. Honest test: learn on the train snapshot, grade on the held-out year
@@ -374,7 +378,7 @@ def run():
 
     # ---- B. Final models: use all history to score "today"
     print("3/4 Refitting on all history and scoring today's customers ...")
-    p_final = fit_bgnbd(score)
+    p_final = fit_bgnbd(score[score["customer_id"] != low])
     pooled = pd.concat([train_b, test_b], ignore_index=True)
     gbms_final = fit_gbms(pooled)
     score_b = add_bgnbd(score, p_final)

@@ -223,7 +223,8 @@ class Store:
             "recommended_action": r["recommended_action"],
             "play": next(s["play"] for s in self.summary["segments"] if s["segment"] == seg_name),
             "channel": next(s["channel"] for s in self.summary["segments"] if s["segment"] == seg_name),
-            "profile": {k: r[k] for k in profile_keys},
+            "campaign": self._campaign(r, seg_name),
+            "profile": {**{k: r[k] for k in profile_keys}, "city": self._city(cid)},
             "prediction": {k: r[k] for k in pred_keys},
             "peer_average": {"clv_12m": peers["clv_12m"].mean(), "churn_risk": peers["churn_risk"].mean(),
                              "n_orders": peers["n_orders"].mean(), "aov": peers["aov"].mean()},
@@ -235,6 +236,21 @@ class Store:
             "alive_trajectory": trajectory,
             "summary": self._sentence(r, seg_name),
         })
+
+    def _city(self, cid):
+        con = self._con()
+        row = con.execute("SELECT city FROM customers WHERE customer_id = ?", (cid,)).fetchone()
+        con.close()
+        return row[0] if row else None
+
+    def _campaign(self, r, seg_name):
+        """What the segment's campaign would cost and bring back for THIS customer,
+        using the same illustrative assumptions as the Segments page."""
+        a = next(s["assumptions"] for s in self.summary["segments"] if s["segment"] == seg_name)
+        gain = float(r["revenue_at_risk_12m"]) * a["save_rate"] + float(r["clv_12m"]) * a["upside_rate"]
+        cost = a["cost_contact"] + gain * a["offer_cost"]
+        return {**a, "expected_gain_gbp": round(gain, 2), "expected_cost_gbp": round(cost, 2),
+                "net_gbp": round(gain - cost, 2)}
 
     @staticmethod
     def _sentence(r, seg):

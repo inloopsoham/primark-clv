@@ -131,7 +131,7 @@ flowchart TD
     G --> GT[_ground_truth_for_validation.csv<br/>hidden truth, used only to check the model]
 ```
 
-Each customer has their own visit rate and their own chance of quietly leaving after each visit (the classic BG/NBD story). Visits are more likely at weekends and in busy months. Loyalty members visit slightly more and leave slightly less, which is an assumption stated openly. One hand-crafted customer, **C10000**, is the guided-demo character: a 38-year-old loyal family shopper in Manchester whose gaps between visits stretched from 26 to 31 to 38 to 60 days.
+Each customer has their own visit rate and their own chance of quietly leaving after each visit (the classic BG/NBD story). Visits are more likely at weekends and in busy months. Loyalty members visit slightly more and leave slightly less, which is an assumption stated openly. One hand-crafted customer, **C10000**, is the guided-demo character: a 38-year-old loyal family shopper in Manchester whose gaps between visits stretched from 26 to 31 to 38 to 60 days. A second hand-written customer, **C10001**, is the contrast: a 24-year-old in Leeds with small baskets (about £6 a visit) who shopped every six weeks or so through 2025 and has not been back since Black Friday. She is written in after all random draws, and the models score her but never train on her, so adding her changes no other customer's numbers.
 
 The same seed always produces the same data.
 
@@ -302,7 +302,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     O[Overview<br/>the problem] --> S[Segments<br/>who and what to do]
-    S --> C[Customer C10000<br/>one story]
+    S --> C[C10000 vs C10001<br/>same signal, different decision]
     C --> L[Loyalty<br/>what more members is worth]
     L --> M[Model<br/>can we trust it]
 ```
@@ -323,7 +323,18 @@ The full minute-by-minute script is in `DEMO_SCRIPT.md`.
 
 ---
 
-## 5. Limits worth stating out loud
+## 5. Why there is no LLM in the engine
+
+This is a deliberate design choice, not a gap.
+
+- **The question is about numbers.** Forecasting spend and churn from transaction history is what statistical and machine-learning models are built for. Language models are built for words.
+- **Same input, same answer.** Every number is reproducible, traceable to a customer's history, and tested on a year the model never saw. An LLM's answer can vary from run to run and cannot be backtested the same way.
+- **Customer data stays inside.** Nothing is sent to an outside AI service; the whole pipeline runs offline.
+- **Cost at scale.** Millions of customers can be scored in minutes with no per-call fees.
+
+Where language AI fits later: on top of the results, never underneath them. For example, a short briefing per customer for the CRM team and a draft message in Primark's voice, with a person approving every message and the model never calculating anything.
+
+## 6. Limits worth stating out loud
 
 - The data is synthetic. Real Primark data would need the same five tables, and real behaviour will not match a simulation exactly.
 - Only customers identified through the loyalty programme, app or email are visible. In-store shoppers who are never identified are not in the data.
@@ -335,7 +346,7 @@ The full minute-by-minute script is in `DEMO_SCRIPT.md`.
 - No channel or promotion data is modelled, there is no login, and the demo runs on 20,000 customers rather than a production-scale base.
 - Planned but not built: a customer briefing with a draft message, and a campaign design assistant, both using an LLM with an offline fallback. The LLM would never calculate numbers; it would only phrase what the models already produced.
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 | Symptom | Fix |
 |---|---|

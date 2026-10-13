@@ -341,6 +341,47 @@ def build_email(rng, cust, left_day):
 
 
 # ----------------------------------------------------------------------------
+# 4b. Second demo customer (C10001): low value and drifting
+# ----------------------------------------------------------------------------
+def override_low_demo(customers, tx, returns, loyalty, email, ground_truth):
+    """Replace C10001 with a hand-written sale shopper. Done after all random
+    draws, so every other customer stays exactly as generated."""
+    cid = f"C{C.DEMO_LOW_INDEX + 1:05d}"
+    customers.loc[customers["customer_id"] == cid,
+                  ["age", "gender", "region", "country", "city", "home_store_id", "join_date"]] = \
+        [24, "F", "UK", "United Kingdom", "Leeds", "S06", "2025-05-03"]
+    # visits: small, regular trips through 2025 (about every six weeks), then silence after Black Friday
+    lines = [  # (date, category, quantity, amount)
+        ("2025-05-03", "Womenswear", 1, 6.00),
+        ("2025-06-21", "Beauty", 1, 3.50), ("2025-06-21", "Accessories", 1, 2.50),
+        ("2025-07-26", "Womenswear", 1, 7.00),
+        ("2025-09-06", "Womenswear", 1, 5.50),
+        ("2025-10-18", "Accessories", 1, 4.00), ("2025-10-18", "Beauty", 1, 2.00),
+        ("2025-11-28", "Womenswear", 1, 8.00),
+    ]
+    dates = sorted({d for d, *_ in lines})
+    tid = {d: f"T{9000001 + i:07d}" for i, d in enumerate(dates)}
+    new = pd.DataFrame([{"line_id": f"L{90000001 + i:08d}", "transaction_id": tid[d], "customer_id": cid,
+                         "transaction_date": d, "store_id": "S06", "category": c, "quantity": q, "amount_gbp": a}
+                        for i, (d, c, q, a) in enumerate(lines)])
+    tx = pd.concat([tx[tx["customer_id"] != cid], new[tx.columns]], ignore_index=True)
+    ret = pd.DataFrame([{"return_id": "R9000001", "line_id": "L90000004", "transaction_id": tid["2025-07-26"],
+                         "customer_id": cid, "return_date": "2025-08-02", "category": "Womenswear",
+                         "amount_refunded_gbp": 7.00, "reason": "Wrong size"}])
+    returns = pd.concat([returns[returns["customer_id"] != cid], ret[returns.columns]], ignore_index=True)
+    loyalty.loc[loyalty["customer_id"] == cid, ["is_member", "enrollment_date", "app_installed"]] = [0, None, 0]
+    months = pd.date_range("2025-05-01", C.END_DATE, freq="MS")
+    em = pd.DataFrame({"customer_id": cid, "month": months.strftime("%Y-%m-%d"), "emails_sent": 4,
+                       "emails_opened": [1 if m < pd.Timestamp("2026-02-01") else 0 for m in months],
+                       "emails_clicked": [1 if m == pd.Timestamp("2025-11-01") else 0 for m in months]})
+    email = pd.concat([email[email["customer_id"] != cid], em[email.columns]], ignore_index=True)
+    ground_truth.loc[ground_truth["customer_id"] == cid,
+                     ["persona", "true_visits_per_week", "true_dropout_chance", "left_in_window",
+                      "last_visit_before_leaving"]] = ["Young fashion", 0.06, 0.30, 1, "2025-11-28"]
+    return customers, tx, returns, loyalty, email, ground_truth
+
+
+# ----------------------------------------------------------------------------
 # 5. Save to SQLite + CSV
 # ----------------------------------------------------------------------------
 def save_tables(tables):
@@ -385,6 +426,9 @@ def print_summary(tables, ground_truth):
     print(f"  Demo customer C{C.DEMO_CUSTOMER_INDEX + 1:05d}: {demo['transaction_id'].nunique()} visits, "
           f"GBP {demo['amount_gbp'].sum():,.0f} spent, last seen {last.date()} "
           f"({(C.END_DATE - last).days} days ago)")
+    low = tx[tx["customer_id"] == f"C{C.DEMO_LOW_INDEX + 1:05d}"]
+    print(f"  Demo customer C{C.DEMO_LOW_INDEX + 1:05d}: {low['transaction_id'].nunique()} visits, "
+          f"GBP {low['amount_gbp'].sum():,.0f} spent, last seen {low['transaction_date'].max()}")
     print("=" * 60)
 
 
@@ -436,6 +480,9 @@ def generate():
         "left_in_window": (left_day >= 0).astype(int),
         "last_visit_before_leaving": np.where(left_day >= 0, day_to_date(np.maximum(left_day, 0)).strftime("%Y-%m-%d"), None),
     })
+
+    customers, tx, returns, loyalty, email, ground_truth = override_low_demo(
+        customers, tx, returns, loyalty, email, ground_truth)
 
     tables = {"customers": customers, "transactions": tx, "returns": returns,
               "loyalty": loyalty, "email_engagement": email}

@@ -31,6 +31,15 @@ app = FastAPI(
 store = Store()
 
 
+@app.middleware("http")
+async def no_stale_front_end(request, call_next):
+    """Make the browser re-check page files on every load, so code updates show up without a hard refresh."""
+    response = await call_next(request)
+    if not request.url.path.startswith("/api"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+
 # ----------------------------------------------------------------------------
 # API
 # ----------------------------------------------------------------------------

@@ -35,6 +35,10 @@ N_DAYS = (END_DATE - START_DATE).days + 1
 # One hand-crafted customer for the live demo: a high-value shopper whose
 # visits are slipping. Index 9999 becomes customer id C10000 (easy to remember).
 DEMO_CUSTOMER_INDEX = 9999
+# A second hand-crafted customer for contrast: a low-value sale shopper who is
+# also drifting away. Index 10000 becomes customer id C10001. She is written in
+# after everything else is generated, so no other customer's data changes.
+DEMO_LOW_INDEX = 10000
 
 # ----------------------------------------------------------------------------
 # Product categories (order matters: all arrays below use this order)

@@ -58,7 +58,7 @@ def run():
     is_m = df["is_member"] == 1
 
     p_mem = fit_bgnbd(df[is_m])
-    p_non = fit_bgnbd(df[~is_m])
+    p_non = fit_bgnbd(df[~is_m & (df["customer_id"] != f"C{C.DEMO_LOW_INDEX + 1:05d}")])
 
     def behaviour(p):
         return {"visits_per_year_if_active": round(52 * p["r"] / p["alpha"], 2),

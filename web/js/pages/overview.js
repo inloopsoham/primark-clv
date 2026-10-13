@@ -83,7 +83,7 @@ export async function render(root) {
     <div class="demo span4">
       <div><h2>Follow one customer from signal to action.</h2>
         <p>${demo ? `C10000, ${demo.profile.age}, ${esc(demo.profile.country)}. ${pct(demo.prediction.churn_risk)} chance they have drifted away, with ${gbp(demo.prediction.revenue_at_risk_12m)} of value at risk.` : "Pick a customer and see why the model flagged them."}</p></div>
-      ${btn("Start the guided demo", 'data-go="#/customer/C10000"')}
+      <div style="display:flex;gap:12px;flex-wrap:wrap">${btn("Start the guided demo", 'data-go="#/customer/C10000"')}${btn("Compare with C10001", 'data-go="#/customer/C10001"')}</div>
     </div>
   </section>`;
 
