@@ -174,6 +174,43 @@ def new_gbm(kind):
         l2_regularization=2.0, categorical_features="from_dtype", random_state=C.SEED)
 
 
+
+# ----------------------------------------------------------------------------
+# RFM benchmark: the classic marketing rule of thumb we must beat
+# ----------------------------------------------------------------------------
+RFM_BANDS = 5
+
+
+def _rfm_edges(series):
+    """Band edges from the training year only (so the test year is never peeked at)."""
+    qs = np.linspace(0, 1, RFM_BANDS + 1)[1:-1]
+    return np.unique(np.quantile(series.to_numpy(float), qs))
+
+
+def _rfm_cell(df, edges):
+    r = np.searchsorted(edges["recency"], df["recency_days"].to_numpy(float), side="right")
+    f = np.searchsorted(edges["frequency"], df["n_orders"].to_numpy(float), side="right")
+    m = np.searchsorted(edges["monetary"], df["total_spend"].to_numpy(float), side="right")
+    return pd.Series(r * 100 + f * 10 + m, index=df.index)
+
+
+def fit_rfm(train):
+    """Group customers into recency x frequency x spend bands. The forecast for a band
+    is simply the average spend its customers made in the following 6 / 12 months."""
+    edges = {"recency": _rfm_edges(train["recency_days"]),
+             "frequency": _rfm_edges(train["n_orders"]),
+             "monetary": _rfm_edges(train["total_spend"])}
+    cell = _rfm_cell(train, edges)
+    means = {h: train[f"target_spend_{h}"].groupby(cell).mean().to_dict() for h in HORIZONS}
+    overall = {h: float(train[f"target_spend_{h}"].mean()) for h in HORIZONS}
+    return {"edges": edges, "means": means, "overall": overall}
+
+
+def predict_rfm(df, rfm, h):
+    cell = _rfm_cell(df, rfm["edges"])
+    return cell.map(rfm["means"][h]).fillna(rfm["overall"][h]).to_numpy(float)
+
+
 def fit_gbms(train):
     """Train the spend-per-visit model and one direct spend model per horizon."""
     cols = feature_columns(train)
@@ -190,7 +227,16 @@ def fit_gbms(train):
         m = new_gbm("spend")
         m.fit(make_X(train, stack_cols), train[f"target_spend_{h}"])
         direct[h] = m
-    return {"cols": cols, "stack_cols": stack_cols, "aov": aov_model, "direct": direct}
+
+    # (c) boosting alone: same spend model but WITHOUT the survival signals (a fair
+    #     "what if we skipped the visit model?" comparison)
+    plain = {}
+    for h in HORIZONS:
+        m = new_gbm("spend")
+        m.fit(make_X(train, cols), train[f"target_spend_{h}"])
+        plain[h] = m
+    return {"cols": cols, "stack_cols": stack_cols, "aov": aov_model, "direct": direct,
+            "plain": plain, "rfm": fit_rfm(train)}
 
 
 def predict_all(df, gbms):
@@ -209,6 +255,10 @@ def predict_all(df, gbms):
         # 1) baseline: keep spending at the historical run-rate
         out[f"baseline_{h}"] = (df["total_spend"].to_numpy() * net_keep
                                 / np.maximum(df["tenure_days"].to_numpy(), 90) * days)
+        # 1b) RFM benchmark: average future spend of customers in the same RFM band
+        out[f"rfm_{h}"] = predict_rfm(df, gbms["rfm"], h)
+        # 1c) boosting alone, no survival signals
+        out[f"gbm_{h}"] = np.clip(gbms["plain"][h].predict(make_X(df, gbms["cols"])), 0, None)
         # 2) BG/NBD visits x historical basket
         out[f"clv_bgnbd_{h}"] = out[f"exp_visits_{h}"] * out["hist_net_aov"]
         # 3) hybrid: BG/NBD visits x GBM basket
@@ -255,10 +305,12 @@ def score_one(y, p):
 
 
 MODEL_NAMES = {
-    "baseline": "Baseline: historical run-rate",
-    "bgnbd": "BG/NBD visits x historical basket",
-    "hybrid": "Hybrid: BG/NBD visits x GBM basket",
-    "stacked": "Stacked: GBM + BG/NBD signals",
+    "baseline": "Baseline: keep spending as before",
+    "rfm": "RFM benchmark: average by recency, frequency and spend band",
+    "gbm": "Boosting alone: no visit model",
+    "bgnbd": "Visit model alone: BG/NBD visits x past basket",
+    "hybrid": "Hybrid: visit model x boosting basket",
+    "stacked": "Stacked: boosting that also sees the visit model",
     "blend": "Final: blend of hybrid + stacked",
 }
 
@@ -267,7 +319,8 @@ def build_scorecard(test_df, pred):
     rows = []
     for h in HORIZONS:
         y = test_df[f"target_spend_{h}"].to_numpy()
-        for key, col in (("baseline", f"baseline_{h}"), ("bgnbd", f"clv_bgnbd_{h}"),
+        for key, col in (("baseline", f"baseline_{h}"), ("rfm", f"rfm_{h}"), ("gbm", f"gbm_{h}"),
+                         ("bgnbd", f"clv_bgnbd_{h}"),
                          ("hybrid", f"clv_hybrid_{h}"), ("stacked", f"clv_stacked_{h}"),
                          ("blend", f"clv_blend_{h}")):
             rows.append({"horizon": h, "model_key": key, "model": MODEL_NAMES[key],

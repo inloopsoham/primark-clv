@@ -127,6 +127,8 @@ class Store:
                 "baseline_mae_12m": sc[("12m", "baseline")]["mae_gbp"],
                 "bias_pct_12m": sc[("12m", final)]["total_bias_pct"],
                 "baseline_bias_pct_12m": sc[("12m", "baseline")]["total_bias_pct"],
+                "rfm_mae_12m": sc[("12m", "rfm")]["mae_gbp"],
+                "rfm_bias_pct_12m": sc[("12m", "rfm")]["total_bias_pct"],
                 "churn_auc": self.metrics["churn"]["auc_bgnbd"],
             },
             "loyalty_headline": {

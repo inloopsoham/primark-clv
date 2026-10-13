@@ -160,6 +160,7 @@ A snapshot only uses information that existed on its date, so nothing from the f
 ```mermaid
 flowchart TD
     F[Customer features] --> B[BG/NBD<br/>survival-style visit model]
+    F --> G0[Boosting alone<br/>no visit-model signals]
     F --> G1[Gradient boosting<br/>spend per visit]
     B --> P[chance still active<br/>churn risk = 1 minus this]
     B --> V[expected visits<br/>6 and 12 months]
@@ -172,14 +173,34 @@ flowchart TD
     G2 --> FIN
     FIN --> OUT[CLV 6m and 12m,<br/>potential CLV if kept active,<br/>revenue at risk]
     BASE[Baseline<br/>keep spending what they spent before] -.compared against.-> FIN
+    RFM[RFM benchmark<br/>average by recency, frequency, spend band] -.compared against.-> FIN
+    G0 -.compared against.-> FIN
 ```
 
 - **BG/NBD** uses three numbers per customer (repeat visits, time of last visit, customer age) to estimate the chance they are still active and how many visits to expect. We use a small variant that lets a customer leave right after the first visit, because that is common in retail.
 - **Gradient boosting** (LightGBM, with a scikit-learn fallback if LightGBM is not installed) learns spend per visit from basket size, categories, returns, loyalty and email behaviour.
-- **Final CLV** averages two views for stability.
+- **Final CLV** averages two views (hybrid and stacked) because that blend gives the smallest error in the *total* forecast, not because it wins on every customer.
 - **Potential CLV** is the value if the customer stays active. **Revenue at risk = potential CLV x churn risk.**
 
-How the models are judged: the baseline and every model are scored on the held-out year with average miss per customer (MAE), total forecast against actual (bias), ranking quality, and churn detection (AUC). On the reference run, the final 12-month model misses by about £38 per customer against about £87 for the baseline, with total forecast within a few percent of actual and a churn detection score of about 0.85. Your numbers will differ slightly with the model engine used.
+**The scorecard is a ladder.** Each row adds one idea, so you can see what each one buys. The Model page shows the same table.
+
+| Row | What it is | Reference run, 12 months: average miss, total vs actual |
+|---|---|---|
+| Baseline | Keep spending as before | £86.94, +168% |
+| RFM benchmark | Average by recency, frequency and spend band (5x5x5 bands, edges set on training data only) | £41.72, +4.2% |
+| Boosting alone | Gradient boosting with no visit model | £37.24, -9.0% |
+| Visit model alone | BG/NBD visits x past basket | £40.55, +11.1% |
+| Hybrid | Visit model x boosting basket | £39.29, +11.7% |
+| Stacked | Boosting that also sees the visit-model signals | £36.72, -9.7% |
+| **Final** | Blend of hybrid and stacked | **£37.73, +1.0%** |
+
+**What the ladder says, honestly.**
+- The final model is about 10% better than the standard RFM method on average miss. The naive baseline is a weak yardstick, so RFM is the fair comparison.
+- Most of the accuracy comes from the customer facts fed to boosting. Boosting alone is within about £0.50 of the final on average miss.
+- The visit model earns its place elsewhere: it gives a *churn probability* (detection score about 0.85, against 0.83 from recency alone) and splits value into expected and at risk. Boosting alone cannot do that.
+- Boosting alone and stacked under-forecast the total by about 9 to 10%, while the blend lands within about 1%. That is why the final is a blend.
+
+Your numbers will differ slightly with the model engine used.
 
 Because the data is synthetic, the generator's hidden true settings are known, and the Model page shows that the BG/NBD parameters the model learned land close to them.
 
@@ -203,7 +224,7 @@ quadrantChart
 | **Win back** | Lower value, likely gone | Low-cost reactivation, email first |
 | **Maintain** | Lower value, still active | Keep warm, no extra spend |
 
-High value means the top 30% of customers by potential 12-month CLV. High risk means a churn risk of 50% or more. For every customer the stage writes plain-English reasons ("last visit 102 days ago, 5.1 times their usual gap") and a suggested next action. For each segment it estimates what a campaign could recover, using **illustrative** save rates and costs defined at the top of `segments.py`. Replace them with Primark's real response and cost data before using the numbers for decisions.
+High value means the top 30% of customers by potential 12-month CLV. High risk means a churn risk of 50% or more. For every customer the stage writes plain-English reasons ("last visit 102 days ago, 5.1 times their usual gap") and a suggested next action. For each segment it estimates what a campaign could recover, using **illustrative** save rates and costs defined at the top of `segments.py` (currently Protect 20%, Win back 12%, Grow upside 5%). Replace them with Primark's real response and cost data before using the numbers for decisions.
 
 ### 3.7 Stage 5: loyalty value (`src/loyalty.py`)
 
@@ -272,6 +293,8 @@ flowchart TD
 - **Theme:** white by default, dark on the switch. All colours are CSS variables under `:root[data-theme]`, so charts follow the theme without redrawing. The choice is remembered in the browser.
 - **Charts:** hand-written SVG (no chart library), so the demo works with the network off.
 - **Colours:** segment colours are fixed (Protect orange, Grow green, Win back blue, Maintain grey) and were checked for colour-blind separation in both themes.
+- **Overview sliders:** the hero has two save-rate sliders (Protect 0 to 60%, Win back 0 to 40%). Dragging them recalculates the recoverable figure and the net return after campaign cost, in the browser, from the same assumptions the Segments page shows.
+- **Model page:** shows the full scorecard ladder with a plain-English note on what boosting alone achieves and what the visit model adds.
 - **Motion:** one entrance animation and the lines that connect the Overview bar to the segment tiles. Both respect the reduced-motion setting.
 
 ### 3.10 The demo path
@@ -306,6 +329,11 @@ The full minute-by-minute script is in `DEMO_SCRIPT.md`.
 - Only customers identified through the loyalty programme, app or email are visible. In-store shoppers who are never identified are not in the data.
 - Campaign effects, costs and the loyalty causal share are assumptions, not measurements. They should be replaced with Primark's own test results.
 - BG/NBD assumes purchase behaviour is steady over time. It does not model one-off events such as a store closure or a major promotion.
+- The accuracy test is partly circular: the data was generated by a process similar to what the visit model assumes. The honest proof is a pilot on real data.
+- Gender and age are currently model inputs. They are sensitive attributes and should be removed or reviewed before real use.
+- There is no uncertainty range on a prediction and no per-customer list of drivers beyond the plain-English reasons. No model version log, CSV export or drift monitoring yet.
+- No channel or promotion data is modelled, there is no login, and the demo runs on 20,000 customers rather than a production-scale base.
+- Planned but not built: a customer briefing with a draft message, and a campaign design assistant, both using an LLM with an offline fallback. The LLM would never calculate numbers; it would only phrase what the models already produced.
 
 ## 6. Troubleshooting
 

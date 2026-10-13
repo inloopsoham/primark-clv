@@ -21,6 +21,8 @@ export async function render(root) {
   const st = { h: "12m" };
   const blendName = (h) => M.scorecard.find((r) => r.horizon === h && r.model_key === "blend");
   const base12 = M.scorecard.find((r) => r.horizon === "12m" && r.model_key === "baseline");
+  const rfm12 = M.scorecard.find((r) => r.horizon === "12m" && r.model_key === "rfm");
+  const gbm12 = M.scorecard.find((r) => r.horizon === "12m" && r.model_key === "gbm");
   const fin12 = blendName("12m");
 
   root.innerHTML = `
@@ -28,8 +30,8 @@ export async function render(root) {
     <h2>How the numbers are made</h2>
     <p class="sub" style="max-width:100ch">The model watches how often each customer shops and how long they have been quiet. A statistical visit model (BG/NBD) estimates the chance they are still active and how many visits to expect. Gradient boosting estimates what they spend on each visit. Multiplying the two gives the expected value. We then test it on a year the model never saw.</p>
     <div class="strip" style="margin-top:18px">
-      <div><p class="num lg">${gbp(fin12.mae_gbp, 0)}</p><p class="label" style="margin-top:8px">Average miss per customer, 12 months. The baseline misses by ${gbp(base12.mae_gbp, 0)}.</p></div>
-      <div><p class="num lg">${fin12.total_bias_pct > 0 ? "+" : ""}${fin12.total_bias_pct.toFixed(1)}%</p><p class="label" style="margin-top:8px">Total forecast vs actual. The baseline overshoots by ${base12.total_bias_pct.toFixed(0)}%.</p></div>
+      <div><p class="num lg">${gbp(fin12.mae_gbp, 0)}</p><p class="label" style="margin-top:8px">Average miss per customer, 12 months. The RFM benchmark misses by ${gbp(rfm12.mae_gbp, 0)}.</p></div>
+      <div><p class="num lg">${fin12.total_bias_pct > 0 ? "+" : ""}${fin12.total_bias_pct.toFixed(1)}%</p><p class="label" style="margin-top:8px">Total forecast vs actual. The RFM benchmark is ${rfm12.total_bias_pct > 0 ? "+" : ""}${rfm12.total_bias_pct.toFixed(1)}%.</p></div>
       <div><p class="num lg">${M.churn.auc_bgnbd.toFixed(2)}</p><p class="label" style="margin-top:8px">Churn detection score. Looking at days since last visit alone scores ${M.churn.auc_recency_only.toFixed(2)}.</p></div>
       <div><p class="num lg">${fin12.top10pct_captures_pct.toFixed(0)}%</p><p class="label" style="margin-top:8px">of next-year spend comes from the 10% of customers we rank highest. A perfect ranking would capture ${fin12.perfect_top10pct_captures_pct.toFixed(0)}%.</p></div>
     </div>
@@ -37,10 +39,11 @@ export async function render(root) {
 
   <section class="panel">
     <div class="panel-head">
-      <div><h2>Scorecard against a held-out year</h2><p class="sub">Lower miss is better. The final model blends two approaches.</p></div>
+      <div><h2>Scorecard against a held-out year</h2><p class="sub">Each row adds one idea. Lower miss is better. The final model blends two approaches.</p></div>
       <div class="tabs" role="tablist" id="h-tabs"><button role="tab" data-h="6m" aria-selected="false">6 months</button><button role="tab" data-h="12m" aria-selected="true">12 months</button></div>
     </div>
     <div class="table-wrap" id="score"></div>
+    <p class="note" id="score-note" style="margin-top:12px;max-width:100ch"></p>
   </section>
 
   <section class="grid-2e">
@@ -101,6 +104,8 @@ export async function render(root) {
     $("#score", root).innerHTML = `<table><thead><tr><th>Approach</th><th class="r">Average miss</th><th class="r">Total vs actual</th><th class="r">Ranking quality</th><th class="r">Top 10% captures</th></tr></thead><tbody>${rows.map((r) =>
       `<tr><td class="${r.model_key === "blend" ? "strong" : ""}">${esc(r.model)}${r.model_key === "blend" ? " (used in the app)" : ""}</td><td class="r ${r.mae_gbp === best ? "good strong" : ""}">${gbp(r.mae_gbp, 2)}</td><td class="r">${r.total_bias_pct > 0 ? "+" : ""}${r.total_bias_pct.toFixed(1)}%</td><td class="r">${r.rank_correlation.toFixed(2)}</td><td class="r">${r.top10pct_captures_pct.toFixed(0)}%</td></tr>`).join("")}</tbody></table>`;
   };
+  const gain = ((rfm12.mae_gbp - fin12.mae_gbp) / rfm12.mae_gbp) * 100;
+  $("#score-note", root).textContent = `Over 12 months the final model misses by ${gbp(fin12.mae_gbp, 2)}, ${gain.toFixed(0)}% less than the RFM benchmark (${gbp(rfm12.mae_gbp, 2)}). Boosting alone comes within ${gbp(Math.abs(gbm12.mae_gbp - fin12.mae_gbp), 2)} of the final model, so the forecast accuracy comes mostly from the customer facts. The visit model adds what the other rows cannot: the chance each customer has already gone, and the split of value into expected and at risk.`;
   drawScore();
   $("#h-tabs", root).addEventListener("click", (e) => {
     const b = e.target.closest("button[data-h]");

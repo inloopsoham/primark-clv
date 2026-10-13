@@ -74,8 +74,8 @@ export async function render(root) {
     <div class="card span2">
       <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap"><h2>Can we trust it?</h2><span class="label">Tested on a year the model never saw</span></div>
       <div class="trio">
-        <div><div class="fig">${gbp(mh.mae_12m)}</div><div class="meta">average miss per customer, baseline ${gbp(mh.baseline_mae_12m)}</div></div>
-        <div><div class="fig">${mh.bias_pct_12m > 0 ? "+" : ""}${mh.bias_pct_12m.toFixed(1)}%</div><div class="meta">total vs actual, baseline +${mh.baseline_bias_pct_12m.toFixed(0)}%</div></div>
+        <div><div class="fig">${gbp(mh.mae_12m)}</div><div class="meta">average miss per customer, RFM benchmark ${gbp(mh.rfm_mae_12m)}</div></div>
+        <div><div class="fig">${mh.bias_pct_12m > 0 ? "+" : ""}${mh.bias_pct_12m.toFixed(1)}%</div><div class="meta">total vs actual, RFM benchmark ${mh.rfm_bias_pct_12m > 0 ? "+" : ""}${mh.rfm_bias_pct_12m.toFixed(0)}%</div></div>
         <div><div class="fig">${mh.churn_auc.toFixed(2)}</div><div class="meta">churn detection, 1.0 is perfect</div></div>
       </div>
     </div>
