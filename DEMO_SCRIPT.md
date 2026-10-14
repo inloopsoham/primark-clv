@@ -29,19 +29,20 @@ Every handover is a fixed line, in **bold**. Nobody steps in anywhere else.
 |---|---|---|---|
 | 0:00 to 0:20 | Soham | Black, film paused | "Meet one of your customers. Watch." |
 | 0:20 to 1:05 | Nobody | Film | Her story |
-| 1:05 to 1:25 | Soham | App, already on C10000 | Bridge: "something you can audit" |
-| 1:25 to 3:00 | Viditi | C10000 | The film, now as a real screen |
-| 3:00 to 4:00 | Viditi | C10001 | Same warning sign, low value |
-| 4:00 to 4:40 | Viditi | Comparison panel | Not every customer deserves the same pound |
-| 4:40 to 6:40 | Viditi | Overview | Zoom out: now do it for everyone |
-| 6:40 to 7:30 | Viditi | Segments | The two customers, at scale |
-| 7:30 to 8:15 | Viditi | Loyalty | One lever |
+| 1:05 to 1:25 | Soham | App, already on C10000 | Bridge: "every number can be checked" |
+| 1:25 to 3:45 | Viditi | C10000, steps 1 to 4 | Who she is → how she shops → what the model sees → what we do |
+| 3:45 to 4:45 | Viditi | C10001, steps 1 to 4 | Same warning sign, low value |
+| 4:45 to 5:25 | Viditi | Step 5: the comparison | Not every customer deserves the same pound |
+| 5:25 to 7:25 | Viditi | Overview | Zoom out: now do it for everyone |
+| 7:25 to 8:15 | Viditi | Segments | The two customers, at scale |
 | 8:15 to 10:15 | Dibyendu | Model | The proof |
 | 10:15 to 11:15 | Viditi + Dibyendu | Slide 10: Why no LLM | Raised before they ask |
 | 11:15 to 12:45 | Soham | Slides 11 and 12 | Back to her; two stores; the ask |
 | 12:45 to 15:00 | All | | Q&A |
 
-**If running long:** cut Loyalty to one sentence. Never cut the two customers, the Model page or the "no LLM" moment.
+**If running long:** shorten Segments to one sentence. Never cut the two customers, the Model page or the "no LLM" moment.
+
+**The rule for every screen:** set the context first, then the conclusion. Always start from who the customer is and what she did, then what the model sees, then what we do.
 
 ---
 
@@ -78,48 +79,67 @@ Nobody speaks. Let the end card hold until it fades. If the audio fails, let it 
 Close the film. The app is already showing C10000.
 
 > "C10000 isn't real; all our data is synthetic, and it says so on every screen. But every one of you has thousands of her.
-> And this year, while everyone pitches you a chatbot, we built something you can audit, number by number.
-> **Viditi, show them where she lives.**"
+> What we've built finds her early, explains why, and tells you what she's worth keeping. And every number behind it can be checked and traced.
+> **Viditi, let's find her in the system.**"
 
 ---
 
 # Act 2: Two people, then everyone (Viditi)
 
-## 1:25 to 3:00, C10000: the film, as a real screen
+The Customer page reads top to bottom as a story, in five numbered steps: **1 Who she is**, **2 How she shops**, **3 What the model sees**, **4 What we do about it**, **5 Compared with another drifting customer**. Viditi simply scrolls down, one step at a time, and says the step name out loud as she reaches it.
 
-> "What you just watched is this screen. Same customer, same numbers.
-> C10000: 38, Manchester, a loyal family shopper. About fifty visits, about £1,900 over three years."
+## 1:25 to 3:45, C10000: from who she is to what we do
 
-Point to the summary.
-> "The model gives her only a [27%] chance of still being an active customer. If she stays, she's worth about [£345] next year. Today we expect only [£92]. So [£253] is at risk."
+**Step 1, Who she is** (top of the page)
+Point to the ring, then the sentence.
+> "What you just watched is this customer. Let's start with what we already know about her, before any model.
+> Three years with us. 38, Manchester. A loyal family shopper: mostly Womenswear, about every 20 days."
 
-Point to **Why this customer was flagged**.
-> "And it tells us why, in a sentence anyone can act on: last visit 102 days ago, five times her usual gap of 20 days."
+Point along the four numbers.
+> "Fifty visits, about £1,900 in total, around £37 a basket, and she hardly ever returns anything."
 
+Point to the three tiles, ending on email.
+> "She's a loyalty member, she has the app, and she gets our emails. So we know her, and we can reach her.
+> One small thing: she's opening fewer of our emails than she used to. Keep that in mind."
+
+**Step 2, How she shops** (scroll)
 Point to **Days between visits**.
-> "Twenty days, then 26, 31, 38, 60. Orange means much longer than her usual. Exactly what you saw in the film."
+> "This is her rhythm, straight from the till. For almost three years she came in about every 20 days, like clockwork. Then this year: 26 days, 31, 38, 60. Orange means much longer than her usual. And since 20 June, nothing at all. That's the 102 days you saw in the film."
 
-Point to **Recommended next step**.
-> "So we invest: early access plus an offer in Womenswear, her favourite category, by app and email."
+Point to **What she buys** and the last visits.
+> "Womenswear first, then Kidswear and Homeware. A family shopper."
 
-## 3:00 to 4:00, C10001: same warning sign
+**Step 3, What the model sees** (scroll)
+Point to the **chance still active** chart.
+> "Now the model's view, built only from that history. Each tick is a visit. After every visit, the chance she's still with us jumps back up, then fades while she's away. After June it falls through the 50% line and keeps falling."
 
-**Click:** the **C10001, low value** chip.
+Point to the number strip.
+> "Today: only a [27%] chance she's still an active customer. If she stays, she's worth about [£345] next year. Allowing for the chance she's gone, we expect only [£92]. So [£253] is at risk."
 
-> "Now C10001. 24, Leeds. Small baskets, about six pounds a visit, every six weeks or so last year. Then nothing since Black Friday.
-> Same warning sign. In fact the model is even more sure she's gone: [92%]. Last visit 306 days ago, seven times her usual gap, and she's stopped opening our emails.
-> But if she stayed, she'd be worth about [£33] a year."
+**Step 4, What we do about it** (scroll)
+> "And here's the conclusion, with its reasons. She's in our Protect group: high value, slipping away. Why? Last visit 102 days ago, five times her usual gap. Visits down from two to none in the last three months.
+> So we invest: early access plus an offer in Womenswear, by app and email."
 
-## 4:00 to 4:40, the comparison
+## 3:45 to 4:45, C10001: same walk, faster
 
-Scroll to **Same warning sign, different decision**.
+**Click:** the **C10001, low value** chip. The page opens at step 1 again.
+
+> "Now a different customer. Same four steps.
+> Who she is: a year and a half with us, against three. 24, Leeds. Six visits, a few pounds a basket. Not a member, no app; the only way we reach her is email, and she's stopped opening it.
+> How she shops: small baskets, about six pounds a visit, every six weeks or so last year. Then nothing since Black Friday: 306 days.
+> What the model sees: even more likely gone, [92%]. But if she stayed, she'd be worth about [£33] a year.
+> What we do: she's in Win back. One automated email, a modest offer, nothing personal."
+
+## 4:45 to 5:25, step 5: the comparison
+
+Scroll to step 5, **Compared with another drifting customer**.
 
 > "Side by side. Same model, same signal, two completely different decisions.
 > For C10000 we spend about [£8] of personal attention to get back about [£50].
-> For C10001 we spend about [£1]: one automated email, no personal offer, for about [£4] back.
+> For C10001 we spend about [£1], one automated email, for about [£4] back.
 > *(pause)* Not every customer deserves the same pound. This tells you where to spend, and just as importantly, where not to."
 
-## 4:40 to 6:40, Overview: now do it for everyone
+## 5:25 to 7:25, Overview: now do it for everyone
 
 > "That's two customers. Now imagine doing this every morning, for every customer you can identify."
 
@@ -138,7 +158,7 @@ Scroll to **Same warning sign, different decision**.
 
 **Click:** the **Protect** tile.
 
-## 6:40 to 7:30, Segments: the two customers, at scale
+## 7:25 to 8:15, Segments: the two customers, at scale
 
 > "Every customer gets the same two questions: how much are they worth if we keep them, and how likely are they to have drifted?"
 
@@ -147,14 +167,6 @@ Point to each tile, one line each:
 - **Grow:** "High value and happy. Reward them; no discounts they'd have shopped without."
 - **Win back:** "C10001 lives here. Lower value, probably gone. Cheap and automated."
 - **Maintain:** "Lower value and steady. Leave them alone and save the money."
-
-## 7:30 to 8:15, Loyalty: one lever
-
-**Click:** Loyalty.
-
-> "One more lever. Customers registered as members visit about 18% more often and leave less. Primark doesn't run a classic loyalty card, so read this as: what would a members programme on the app be worth? It's association, not proof, so this slider lets you decide how much you believe. And who you invite matters more than how many."
-
-**Click:** drag **share of the gap the programme really causes** to 25%, then back to 50%.
 
 **Handover:** **"You've seen what it says. Dibyendu built the models, and he's the reason we hold ourselves to such a strict test."**
 
